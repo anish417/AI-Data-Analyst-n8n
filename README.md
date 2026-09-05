@@ -44,5 +44,4 @@ AI-generated Analysis
 
 
 
-  ↓
-User
+
