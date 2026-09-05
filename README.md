@@ -36,11 +36,10 @@ AI Agent
 AI-generated Analysis
 
 
-## 🔄 Workflow
+
 
 ![n8n AI Data Analyst Workflow](Workflow.png)
 
-<img width="744" height="387" alt="image" src="https://github.com/user-attachments/assets/130191d0-ea9f-4962-a865-1d7e11eb579e" />
 
 
 
