@@ -34,5 +34,13 @@ AI Agent
   └── Gmail Tool
   ↓
 AI-generated Analysis
+
+
+## 🔄 Workflow
+
+![n8n AI Data Analyst Workflow](Workflow.png)
+
+
+
   ↓
 User
