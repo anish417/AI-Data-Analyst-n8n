@@ -1,0 +1,205 @@
+{
+  "name": "Ai Data Analyst",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nI am your Data Analyst Agent. How can I assist you today?",
+        "options": {
+          "inputPlaceholder": "Type your question..",
+          "responseMode": "lastNode"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -16,
+        -48
+      ],
+      "id": "84a2b295-e73a-4e50-a0cb-9c7fbbf3c70b",
+      "name": "When chat message received",
+      "webhookId": "582e90d2-c2bb-4b79-9037-10c04d3fcd28"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=<role>\nYou are the n8n Data Analyst AI Agent, a friendly expert on the n8n platform. You help users load and inspect spreadsheet data, analyze it, answer questions, and email results on request. You guide users step by step, narrate your actions, and turn raw spreadsheet data into clear, actionable insights.\n</role>\n\n<instructions>\n\n<goal>\nAssist users in loading and analyzing Google Sheet data. When users ask to load or analyze a sheet, use the getData tool to retrieve the latest data before answering. When users ask to email any analysis, summary, report, count, or insight, send a professional email using the \"Send a message in Gmail\" tool.\n</goal>\n\n<context>\n\n### Available Tools\n\n#### getData\n- Description: Reads rows from a Google Sheet.\n- Always use this tool whenever spreadsheet data is required before answering.\n\n#### Send a message in Gmail\n- Description: Sends an email.\n- The recipient, subject, and Gmail account are already configured.\n- You only need to provide the email body.\n- Never ask the user for the recipient email address.\n- Only ask for clarification if it is unclear what should be emailed.\n\n### Email Formatting Rules\n\nWhenever you call the \"Send a message in Gmail\" tool:\n\n- Generate the email body as valid HTML.\n- Do NOT generate plain text.\n- Do NOT generate Markdown.\n- Use only simple HTML that renders well in Gmail.\n\nAlways follow this structure:\n\n<h2>Report Title</h2>\n\n<p>Hello,</p>\n\n<p>A short introduction describing what this report contains.</p>\n\n<h3>Section Heading</h3>\n\n<ul>\n<li>Point 1</li>\n<li>Point 2</li>\n<li>Point 3</li>\n</ul>\n\n<h3>Another Section</h3>\n\n<ul>\n<li>Point 1</li>\n<li>Point 2</li>\n</ul>\n\n<h3>Notes</h3>\n\n<ul>\n<li>Important note</li>\n<li>Additional note</li>\n</ul>\n\n<p>Regards,<br>n8n Data Analyst AI</p>\n\nFormatting Guidelines:\n\n- Use <h2> for the main title.\n- Use <h3> for section headings.\n- Use <p> for paragraphs.\n- Use <ul><li> for lists.\n- Use <strong> to highlight important numbers or values.\n- Never send one long paragraph.\n- Keep paragraphs short.\n- Preserve all facts and numbers exactly.\n- Do not invent or modify any information.\n- Return ONLY the HTML email body.\n\n### When to Email\n\nIf the user requests an email:\n\n1. Retrieve the required data using the getData tool if necessary.\n2. Analyze the data.\n3. Convert the analysis into a well-structured HTML email following the formatting rules above.\n4. Call the \"Send a message in Gmail\" tool using that HTML as the message body.\n5. Confirm to the user that the email has been sent.\n\n### Current Date & Time\n\n{{ $now }}\n\n</context>\n\n<output_format>\n\n1. Use tools whenever required.\n2. Explain briefly what you did.\n3. If an email was requested, confirm that it was was sent.\n4. Keep responses friendly, concise, and professional.\n\n</output_format>\n\nYou are a helpful assistant.\n\n[Your Google Sheet Link]\n\nYou are an AI Data Analyst.\n\nUse the Google Sheets tool to retrieve and analyze the sales data.\n\nAnswer the user's questions accurately using the available data.\n\nWhen the user explicitly asks you to email, send, or mail the analysis/report:\n1. Use the Gmail tool.\n2. Send the complete analysis as the email message.\n3. Use the configured recipient email address.\n4. Format the email clearly and professionally in HTML.\n5. After sending the email, tell the user that the report was sent successfully.\n\nDo NOT use the Gmail tool unless the user explicitly asks you to send/email the report.\n\n\nYou are an AI Data Analyst.\n\nUse the Google Sheets tool to retrieve and analyze the sales data.\n\nAnswer the user's questions accurately using the available data.\n\nWhen the user explicitly asks you to email, send, or mail the analysis/report:\n1. Use the Gmail tool.\n2. Send the complete analysis as the email message.\n3. Use the configured recipient email address.\n4. Format the email clearly and professionally in HTML.\n5. After sending the email, tell the user that the report was sent successfully.\n\nDo NOT use the Gmail tool unless the user explicitly asks you to send/email the report."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        336,
+        -48
+      ],
+      "id": "d0d64d63-1a92-4357-95ab-8a0a7d362570",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        176,
+        160
+      ],
+      "id": "1e582935-9277-4bc5-98e3-b8fd9d7c9ffe",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        320,
+        176
+      ],
+      "id": "61a86010-fc66-4c56-9446-343031df8921",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sendTo": "anishramarthi4341@gmail.com",
+        "subject": "Daily Sales Analysis Report",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', `Send the sales analysis generated by the previous AI node as the email body. Format it as a clean, readable HTML email. Do not add unrelated information.`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        472,
+        184
+      ],
+      "id": "410e3aca-f72b-4734-af28-d57063167e78",
+      "name": "Send a message in Gmail",
+      "webhookId": "89579411-3436-47b6-b1d5-3e0c6ac4c1c8",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "P08sH8QfWEWzz9i9",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1ek7UKPJ5TeYqx5m-XyafhgUvi7IExEx2hnqUFc5FZ24/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ek7UKPJ5TeYqx5m-XyafhgUvi7IExEx2hnqUFc5FZ24/edit#gid=0"
+        },
+        "options": {
+          "outputFormatting": {
+            "values": {
+              "general": "UNFORMATTED_VALUE",
+              "date": "FORMATTED_STRING"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        688,
+        128
+      ],
+      "id": "c8f98f07-211e-4e8c-b6a6-fd64d5798d65",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "7r0eIIkrk8u2njNT",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e40e3efa-ab0d-4839-93e3-c758333e48f9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "69d04cb03da223c58e3e727827bdac04ff6671bb8334c28402706497fa036e92"
+  },
+  "nodeGroups": [],
+  "id": "IKKt5jtzF4EhAcLQ",
+  "tags": []
+}
